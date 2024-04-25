@@ -9,12 +9,18 @@ from utilities.jwt import ACCESS_TOKEN_EXPIRE_MINUTES, create_access_token
 
 
 def register(db: Session, user: UserCreate):
+    if db.query(User).filter(User.email == user.email).first():
+        raise Exception("Email already exists")
+    if db.query(User).filter(User.username == user.username).first():
+        raise Exception("Username already exists")
+
     user = User(**user.model_dump())
     user.password = hash_password(user.password)
     db.add(user)
     db.commit()
     db.refresh(user)
     return user
+
 
 def verify_email(db: Session, user_email: VerifyEmail):
     user = db.query(User).filter(User.email == user_email.email).first()
@@ -23,8 +29,9 @@ def verify_email(db: Session, user_email: VerifyEmail):
     db.refresh(user)
     return user
 
+
 def login(db: Session, login: LoginData):
-    
+
     try:
         user = db.query(User).filter(User.username == login.username).first()
 
