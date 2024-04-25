@@ -68,3 +68,14 @@ def add_member_to_organization(
         return {"detail": "Member added successfully"}
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
+
+
+@router.delete("/{organization_id}/members/{member_id}")
+def remove_member_from_organization(
+    organization_id: str, member_id: str, db=Depends(get_db)
+):
+    try:
+        organization_svc.remove_member_from_organization(db, organization_id, member_id)
+        return {"detail": "Member removed successfully"}
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
