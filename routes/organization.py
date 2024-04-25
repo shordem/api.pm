@@ -1,6 +1,7 @@
 from fastapi import APIRouter, HTTPException, Depends
 from typing import Annotated
 
+from schemas.member import MemberCreate
 from services import organization as organization_svc
 from schemas.organization import OrganizationCreatePayload, OrganizationCreate
 from schemas.user import User
@@ -52,5 +53,18 @@ def get_organization(organization_id: str, db=Depends(get_db)):
 def list_organization_members(organization_id: str, db=Depends(get_db)):
     try:
         return organization_svc.list_organization_members(db, organization_id)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+@router.post("/{organization_id}/members")
+def add_member_to_organization(
+    organization_id: str,
+    member: MemberCreate,
+    db=Depends(get_db),
+):
+    try:
+        organization_svc.add_member_to_organization(db, organization_id, member.email)
+        return {"detail": "Member added successfully"}
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
