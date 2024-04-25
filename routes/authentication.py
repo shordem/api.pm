@@ -10,10 +10,15 @@ router = APIRouter(
     tags=["auth"],
 )
 
+
 @router.post("/register")
 def register(user: UserCreate, db: Session = Depends(get_db)):
-    authentication_svc.register(db, user)
-    return {"message": "User registered successfully"}
+    try:
+        authentication_svc.register(db, user)
+        return {"message": "User registered successfully"}
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
 
 @router.post("/login")
 def login(login: LoginData, db: Session = Depends(get_db)):
