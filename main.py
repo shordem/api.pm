@@ -15,7 +15,7 @@ app = FastAPI(
     version="0.1.0",
     title="Todo App",
     description="A simple todo app",
-    root_path="/v1",
+    root_path="/v2",
 )
 
 app.include_router(authentication.router)
