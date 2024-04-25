@@ -78,3 +78,21 @@ def add_member_to_organization(db: Session, organization_id: str, user_email: st
     new_member = Member(user_id=user.id, organization_id=organization_id)
     db.add(new_member)
     db.commit()
+
+
+def remove_member_from_organization(db: Session, organization_id: str, user_id: str):
+    member = (
+        db.query(Member)
+        .filter(Member.organization_id == organization_id, Member.user_id == user_id)
+        .first()
+    )
+    if not member:
+        raise Exception("User is not a member of the organization")
+
+    org = get_organization(db, organization_id)
+
+    if str(org.owner_id) == user_id:
+        raise Exception("Owner cannot be removed from the organization")
+
+    db.delete(member)
+    db.commit()
