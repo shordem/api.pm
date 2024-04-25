@@ -4,7 +4,9 @@ from models.organization import Organization
 from models.member import Member
 from models.folder import Folder
 from models.member import Member
+from models.user import User
 from schemas.organization import OrganizationCreate
+from schemas.user import User as UserSchema
 
 
 def get_organization(db: Session, organization_id: str):
@@ -22,7 +24,18 @@ def get_organizations_by_member(db: Session, user_id: str):
 
 
 def list_organization_members(db: Session, organization_id: str):
-    return db.query(Member).filter(Member.organization_id == organization_id).all()
+    results = (
+        db.query(User)
+        .join(Member, User.id == Member.user_id)
+        .filter(Member.organization_id == organization_id)
+        .all()
+    )
+
+    resultDto = []
+    for user in results:
+        resultDto.append(UserSchema.model_validate(user))
+
+    return resultDto
 
 
 def create_organization(db: Session, org: OrganizationCreate):
