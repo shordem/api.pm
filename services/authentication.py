@@ -2,6 +2,8 @@ from datetime import timedelta
 from sqlalchemy.orm import Session
 
 from models.user import User
+from schemas.organization import OrganizationCreate
+from services.organization import create_organization
 from schemas.authentication import LoginData, Token, VerifyEmail
 from schemas.user import UserCreate
 from utilities.authentication import hash_password, verify_password
@@ -9,17 +11,26 @@ from utilities.jwt import ACCESS_TOKEN_EXPIRE_MINUTES, create_access_token
 
 
 def register(db: Session, user: UserCreate):
-    if db.query(User).filter(User.email == user.email).first():
-        raise Exception("Email already exists")
-    if db.query(User).filter(User.username == user.username).first():
-        raise Exception("Username already exists")
+    try:
+        if db.query(User).filter(User.email == user.email).first():
+            raise Exception("Email already exists")
+        if db.query(User).filter(User.username == user.username).first():
+            raise Exception("Username already exists")
 
-    user = User(**user.model_dump())
-    user.password = hash_password(user.password)
-    db.add(user)
-    db.commit()
-    db.refresh(user)
-    return user
+        user = User(**user.model_dump())
+        user.password = hash_password(user.password)
+        db.add(user)
+        db.commit()
+
+        org = OrganizationCreate(name="Personal", owner_id=str(user.id))
+
+        create_organization(db, org)
+
+        db.refresh(user)
+        return user
+    except Exception as e:
+        db.rollback()
+        raise e
 
 
 def verify_email(db: Session, user_email: VerifyEmail):
