@@ -40,4 +40,4 @@ jobs:
 
       - name: run new container
         run: |
-          docker run -d --restart unless-stopped --name api-todo-app-v2 -p 2100:3000 api-todo-app-v2:${{ github.sha }}
+          docker run -d --restart unless-stopped --name api-todo-app-v2 -p 2200:3000 api-todo-app-v2:${{ github.sha }}
