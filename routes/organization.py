@@ -8,7 +8,11 @@ from dependencies.db import get_db
 from dependencies.user import get_current_verified_user
 
 
-router = APIRouter(prefix="/organizations", tags=["Organization"])
+router = APIRouter(
+    prefix="/organizations",
+    tags=["Organization"],
+    dependencies=[Depends(get_current_verified_user)],
+)
 
 
 @router.get("")
