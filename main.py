@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 from routes import (
     authentication,
@@ -8,6 +9,9 @@ from routes import (
 from config.database import Base
 from config.database import engine
 
+origins = [
+    "http://localhost",
+]
 
 Base.metadata.create_all(bind=engine)
 
@@ -16,6 +20,14 @@ app = FastAPI(
     title="Todo App",
     description="A simple todo app",
     root_path="/v2",
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["GET", "POST", "PATCH", "DELETE"],
+    allow_headers=["Authorization", "Content-Type", "Accept"],
 )
 
 app.include_router(authentication.router)
