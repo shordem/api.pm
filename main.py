@@ -1,17 +1,12 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from routes import (
-    authentication,
-    user as user_route,
-    organization as organization_route,
-)
-from config.database import Base
-from config.database import engine
+from config.database import Base, engine
+from routes import authentication
+from routes import organization as organization_route
+from routes import user as user_route
 
-origins = [
-    "http://localhost",
-]
+origins = ["http://localhost", "http://locahost:5173"]
 
 Base.metadata.create_all(bind=engine)
 
