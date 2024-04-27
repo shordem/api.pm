@@ -6,7 +6,7 @@ from routes import authentication
 from routes import organization as organization_route
 from routes import user as user_route
 
-origins = ["http://localhost"]
+origins = ["*"]
 
 Base.metadata.create_all(bind=engine)
 
@@ -21,8 +21,8 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
     allow_credentials=True,
-    allow_methods=["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
-    allow_headers=["Authorization", "Content-Type", "Accept"],
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 app.include_router(authentication.router)
