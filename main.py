@@ -6,7 +6,7 @@ from routes import authentication
 from routes import organization as organization_route
 from routes import user as user_route
 
-origins = ["http://localhost", "http://locahost:5173"]
+origins = ["http://localhost"]
 
 Base.metadata.create_all(bind=engine)
 
