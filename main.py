@@ -22,7 +22,7 @@ app.add_middleware(
     allow_origins=origins,
     allow_credentials=True,
     allow_methods=["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
-    allow_headers=["*"],
+    allow_headers=["Accept", "Accept-Language", "Content-Language", "Content-Type"],
 )
 
 app.include_router(authentication.router)
