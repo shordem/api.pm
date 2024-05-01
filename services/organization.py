@@ -1,12 +1,13 @@
 from sqlalchemy.orm import Session
 
 from models.organization import Organization
-from models.member import Member
 from models.folder import Folder
-from models.member import Member
 from models.user import User
+from models.user_organization import UserOrganization
+from models.role import Role
 from schemas.organization import OrganizationCreate
 from schemas.user import User as UserSchema
+from schemas.organization import Organization as OrganizationSchema
 from services.user import get_user_by_email
 
 
@@ -19,27 +20,33 @@ def get_organization(db: Session, organization_id: str):
 
 def find_by_member(db: Session, user_id: str, organization_id: str):
     return (
-        db.query(Member)
-        .filter(Member.user_id == user_id, Member.organization_id == organization_id)
+        db.query(UserOrganization)
+        .filter(UserOrganization.user_id == user_id)
+        .filter(UserOrganization.organization_id == organization_id)
         .first()
     )
 
 
 def get_organizations_by_member(db: Session, user_id: str):
-
-    return (
+    results = (
         db.query(Organization)
-        .join(Member, Organization.id == Member.organization_id)
-        .filter(Member.user_id == user_id)
+        .join(UserOrganization, Organization.id == UserOrganization.organization_id)
+        .filter(UserOrganization.user_id == user_id)
         .all()
     )
+
+    resultDto = []
+    for org in results:
+        resultDto.append(OrganizationSchema.model_validate(org))
+
+    return resultDto
 
 
 def list_organization_members(db: Session, organization_id: str):
     results = (
         db.query(User)
-        .join(Member, User.id == Member.user_id)
-        .filter(Member.organization_id == organization_id)
+        .join(UserOrganization, User.id == UserOrganization.user_id)
+        .filter(UserOrganization.organization_id == organization_id)
         .all()
     )
 
@@ -58,8 +65,17 @@ def create_organization(db: Session, org: OrganizationCreate):
     new_folder = Folder(name="all", organization_id=new_org.id)
     db.add(new_folder)
 
-    new_member = Member(user_id=org.owner_id, organization_id=new_org.id)
-    db.add(new_member)
+    owner_role = db.query(Role).filter(Role.name == "owner").first()
+
+    if owner_role is None:
+        db.rollback()
+        raise Exception("Role not found")
+
+    new_user_org = UserOrganization(
+        user_id=org.owner_id, organization_id=new_org.id, role_id=owner_role.id
+    )
+
+    db.add(new_user_org)
 
     db.commit()
 
@@ -75,17 +91,16 @@ def add_member_to_organization(db: Session, organization_id: str, user_email: st
     if member:
         raise Exception("User is already a member of the organization")
 
-    new_member = Member(user_id=user.id, organization_id=organization_id)
+    member_role = db.query(Role).filter(Role.name == "member").first()
+    new_member = UserOrganization(
+        user_id=user.id, organization_id=organization_id, role=member_role.id
+    )
     db.add(new_member)
     db.commit()
 
 
 def remove_member_from_organization(db: Session, organization_id: str, user_id: str):
-    member = (
-        db.query(Member)
-        .filter(Member.organization_id == organization_id, Member.user_id == user_id)
-        .first()
-    )
+    member = find_by_member(db, user_id, organization_id)
     if not member:
         raise Exception("User is not a member of the organization")
 
