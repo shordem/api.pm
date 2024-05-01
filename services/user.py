@@ -4,7 +4,10 @@ from models.user import User
 
 
 def get_user(db: Session, user_id: str):
-    return db.query(User).filter(User.id == user_id).first()
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        raise Exception("User not found")
+    return user
 
 
 def get_user_by_email(db: Session, email: str):
