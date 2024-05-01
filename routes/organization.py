@@ -7,7 +7,7 @@ from schemas.organization import OrganizationCreatePayload, OrganizationCreate
 from schemas.user import User
 from dependencies.db import get_db
 from dependencies.user import get_current_verified_user
-
+from dependencies.permission import check_permission
 
 router = APIRouter(
     prefix="/organizations",
@@ -50,8 +50,13 @@ def get_organization(organization_id: str, db=Depends(get_db)):
 
 
 @router.get("/{organization_id}/members")
-def list_organization_members(organization_id: str, db=Depends(get_db)):
+def list_organization_members(
+    organization_id: str,
+    user: Annotated[User, Depends(get_current_verified_user)],
+    db=Depends(get_db),
+):
     try:
+        check_permission(db, user, organization_id, "list_member")
         return organization_svc.list_organization_members(db, organization_id)
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
@@ -61,9 +66,11 @@ def list_organization_members(organization_id: str, db=Depends(get_db)):
 def add_member_to_organization(
     organization_id: str,
     member: MemberCreate,
+    user: Annotated[User, Depends(get_current_verified_user)],
     db=Depends(get_db),
 ):
     try:
+        check_permission(db, user, organization_id, "add_member")
         organization_svc.add_member_to_organization(db, organization_id, member.email)
         return {"detail": "Member added successfully"}
     except Exception as e:
@@ -72,9 +79,13 @@ def add_member_to_organization(
 
 @router.delete("/{organization_id}/members/{member_id}")
 def remove_member_from_organization(
-    organization_id: str, member_id: str, db=Depends(get_db)
+    organization_id: str,
+    member_id: str,
+    user: Annotated[User, Depends(get_current_verified_user)],
+    db=Depends(get_db),
 ):
     try:
+        check_permission(db, user, organization_id, "remove_member")
         organization_svc.remove_member_from_organization(db, organization_id, member_id)
         return {"detail": "Member removed successfully"}
     except Exception as e:
