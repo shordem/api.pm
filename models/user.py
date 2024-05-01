@@ -2,6 +2,7 @@ from sqlalchemy import Column, String, Boolean
 from sqlalchemy.orm import relationship
 
 from models import base
+from models.user_organization import UserOrganization
 
 
 class User(base.BaseModel):
@@ -12,7 +13,6 @@ class User(base.BaseModel):
     is_email_verified = Column(Boolean, default=False)
     password = Column(String)
 
-    organizations = relationship("Organization", back_populates="owner")
-    members = relationship("Member", back_populates="user")
+    organizations = relationship(UserOrganization, back_populates="user")
     todos = relationship("Todo", back_populates="creator")
     notes = relationship("Note", back_populates="creator")
