@@ -16,26 +16,22 @@ bearer_scheme = HTTPBearer()
 async def get_current_user(
     token: Annotated[str, Depends(bearer_scheme)], db=Depends(get_db)
 ):
-    credentials_exception = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Could not validate credentials",
-    )
 
     try:
         payload = verify_token(token.credentials)
+
+        if not isinstance(payload, dict):
+            raise HTTPException(status_code=400, detail="Invalid token")
+
         user_id: str = payload.get("sub")
         if user_id is None:
-            raise credentials_exception
+            raise HTTPException(status_code=400, detail="Invalid token")
         token_data = TokenData(user_id=user_id)
-    except JWTError:
-        raise credentials_exception
-    except Exception as e:
-        print(e)
-        raise credentials_exception
+    except JWTError as e:
+        raise HTTPException(status_code=400, detail="Invalid token")
 
     user = get_user(db=db, user_id=token_data.user_id)
-    if user is None:
-        raise credentials_exception
+
     return user
 
 
