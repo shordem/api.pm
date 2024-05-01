@@ -11,6 +11,7 @@ SECRET_KEY = os.getenv("JWT_SECRET")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = os.getenv("JWT_EXPIRE_MINUTES", 30)
 
+
 def create_access_token(data: dict, expires_delta: timedelta | None = None):
     try:
         to_encode = data.copy()
@@ -24,17 +25,12 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None):
     except Exception as e:
         return e
 
+
 def verify_token(token: str):
-    credentials_exception = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Could not validate credentials",
-        headers={"WWW-Authenticate": "Bearer"},
-    )
-        
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         return payload
-    except JWTError:
-        return credentials_exception
+    except JWTError as e:
+        return HTTPException(status_code=400, detail=e)
     except Exception as e:
-        return credentials_exception
+        return HTTPException(status_code=400, detail=e)
