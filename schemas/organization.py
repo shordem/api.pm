@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, UUID4
 
 
 class OrganizationBase(BaseModel):
@@ -18,7 +18,9 @@ class OrganizationCreatePayload(BaseModel):
 
 
 class Organization(OrganizationBase):
-    id: str
+    id: UUID4
+    name: str
+    image_url: str
 
     class Config:
         from_attributes = True
