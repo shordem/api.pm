@@ -62,7 +62,7 @@ def create_organization(db: Session, org: OrganizationCreate):
     db.add(new_org)
     db.commit()
 
-    new_folder = Folder(name="all", organization_id=new_org.id)
+    new_folder = Folder(name="all", organization_id=new_org.id, is_default=True)
     db.add(new_folder)
 
     owner_role = db.query(Role).filter(Role.name == "owner").first()
