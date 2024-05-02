@@ -53,7 +53,6 @@ def list_organization_members(db: Session, organization_id: str):
 
     resultDto = []
     for user, role in results:
-        print(role.__dict__)
         user_data = UserSchema.model_validate(user)
         data = ListMember(role=role.name, **user_data.model_dump())
         resultDto.append(data)
