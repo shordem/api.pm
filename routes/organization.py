@@ -4,7 +4,7 @@ from typing import Annotated
 from schemas.member import MemberCreate
 from services import organization as organization_svc
 from schemas.organization import OrganizationCreatePayload, OrganizationCreate
-from schemas.user import User
+from schemas.user import UserSchema
 from dependencies.db import get_db
 from dependencies.user import get_current_verified_user
 from dependencies.permission import check_permission
@@ -18,7 +18,7 @@ router = APIRouter(
 
 @router.get("")
 def get_organizations(
-    user: Annotated[User, Depends(get_current_verified_user)], db=Depends(get_db)
+    user: Annotated[UserSchema, Depends(get_current_verified_user)], db=Depends(get_db)
 ):
     try:
         return organization_svc.get_organizations_by_member(db, user.id)
@@ -29,7 +29,7 @@ def get_organizations(
 @router.post("")
 def create_organization(
     organization: OrganizationCreatePayload,
-    user: Annotated[User, Depends(get_current_verified_user)],
+    user: Annotated[UserSchema, Depends(get_current_verified_user)],
     db=Depends(get_db),
 ):
     try:
@@ -52,7 +52,7 @@ def get_organization(organization_id: str, db=Depends(get_db)):
 @router.get("/{organization_id}/members")
 def list_organization_members(
     organization_id: str,
-    user: Annotated[User, Depends(get_current_verified_user)],
+    user: Annotated[UserSchema, Depends(get_current_verified_user)],
     db=Depends(get_db),
 ):
     try:
@@ -66,7 +66,7 @@ def list_organization_members(
 def add_member_to_organization(
     organization_id: str,
     member: MemberCreate,
-    user: Annotated[User, Depends(get_current_verified_user)],
+    user: Annotated[UserSchema, Depends(get_current_verified_user)],
     db=Depends(get_db),
 ):
     try:
@@ -81,7 +81,7 @@ def add_member_to_organization(
 def remove_member_from_organization(
     organization_id: str,
     member_id: str,
-    user: Annotated[User, Depends(get_current_verified_user)],
+    user: Annotated[UserSchema, Depends(get_current_verified_user)],
     db=Depends(get_db),
 ):
     try:

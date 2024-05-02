@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.orm import Session
 from services import authentication as authentication_svc
 from schemas.authentication import LoginData, VerifyEmail
-from schemas.user import User, UserCreate
+from schemas.user import UserCreate
 from dependencies.db import get_db
 
 router = APIRouter(

@@ -1,12 +1,7 @@
-from typing import Annotated
-
-from fastapi import Depends, HTTPException, status
+from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
-from dependencies.user import get_current_verified_user
-from schemas.user import User
-from schemas.authentication import TokenData
-from dependencies.db import get_db
+from schemas.user import UserSchema
 from models.organization import Organization
 from models.user_organization import UserOrganization
 from models.permission import Permission
@@ -14,7 +9,7 @@ from models.role_permission import RolePermission
 
 
 def check_permission(
-    db: Session, user: User, organization_id: str, required_permission: str
+    db: Session, user: UserSchema, organization_id: str, required_permission: str
 ):
     if user is None:
         raise HTTPException(status_code=404, detail="User not found")

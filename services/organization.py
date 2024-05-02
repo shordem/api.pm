@@ -6,7 +6,7 @@ from models.user import User
 from models.user_organization import UserOrganization
 from models.role import Role
 from schemas.organization import OrganizationCreate
-from schemas.user import User as UserSchema
+from schemas.user import UserSchema
 from schemas.organization import Organization as OrganizationSchema
 from services.user import get_user_by_email
 
