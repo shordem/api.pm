@@ -2,6 +2,7 @@ from fastapi import APIRouter, HTTPException, Depends
 from typing import Annotated
 
 from schemas.note import NoteCreate, NoteUpdate
+from schemas.user import UserSchema
 from services import note as note_svc
 from dependencies.db import get_db
 from dependencies.user import get_current_verified_user
@@ -14,42 +15,74 @@ router = APIRouter(
 )
 
 
-@router.get("/{note_id}")
-def get_note(note_id: str, db=Depends(get_db)):
+@router.get("{organization_id}/{note_id}")
+def get_note(
+    organization_id: str,
+    note_id: str,
+    user: Annotated[UserSchema, Depends(get_current_verified_user)],
+    db=Depends(get_db),
+):
     try:
+        check_permission(db, user, organization_id, "view_task")
         return note_svc.get_note(db, note_id)
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
 
-@router.get("/{folder_id}")
-def get_notes(folder_id: str, db=Depends(get_db)):
+@router.get("{organization_id}/{folder_id}")
+def get_notes(
+    organization_id: str,
+    folder_id: str,
+    user: Annotated[UserSchema, Depends(get_current_verified_user)],
+    db=Depends(get_db),
+):
     try:
+        check_permission(db, user, organization_id, "list_task")
         return note_svc.get_notes(db, folder_id)
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
 
-@router.post("/{folder_id}")
-def create_note(folder_id: str, note: NoteCreate, db=Depends(get_db)):
+@router.post("{organization_id}/{folder_id}")
+def create_note(
+    organization_id: str,
+    folder_id: str,
+    note: NoteCreate,
+    user: Annotated[UserSchema, Depends(get_current_verified_user)],
+    db=Depends(get_db),
+):
     try:
+        check_permission(db, user, organization_id, "create_task")
         return note_svc.create_note(db, folder_id, note)
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
 
-@router.patch("/{note_id}")
-def update_note(note_id: str, note: NoteUpdate, db=Depends(get_db)):
+@router.patch("{organization_id}/{note_id}")
+def update_note(
+    organization_id: str,
+    note_id: str,
+    note: NoteUpdate,
+    user: Annotated[UserSchema, Depends(get_current_verified_user)],
+    db=Depends(get_db),
+):
     try:
+        check_permission(db, user, organization_id, "update_task")
         note_svc.get_note(db, note_id)
         return note_svc.update_note(db, note)
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
 
-@router.delete("/{note_id}")
-def delete_note(note_id: str, db=Depends(get_db)):
+@router.delete("{organization_id}/{note_id}")
+def delete_note(
+    organization_id: str,
+    note_id: str,
+    user: Annotated[UserSchema, Depends(get_current_verified_user)],
+    db=Depends(get_db),
+):
     try:
+        check_permission(db, user, organization_id, "delete_task")
         return note_svc.delete_note(db, note_id)
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
