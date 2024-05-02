@@ -22,8 +22,13 @@ def create_folder(db: Session, folder_create: FolderCreate, org_id: str):
     return folder
 
 
-def update_folder(db: Session, folder: FolderUpdate):
-    db.add(folder)
+def update_folder(db: Session, folder_id: str, folder_update: FolderUpdate):
+    folder = get_folder(db, folder_id)
+    if folder is None:
+        raise Exception("Folder not found")
+
+    folder.name = folder_update.name
+
     db.commit()
     db.refresh(folder)
     return folder

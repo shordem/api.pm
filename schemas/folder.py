@@ -18,5 +18,5 @@ class FolderSchema(FolderBase):
         from_attributes = True
 
 
-class FolderUpdate(FolderBase):
-    id: UUID4
+class FolderUpdate(FolderCreate):
+    pass

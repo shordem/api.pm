@@ -53,7 +53,8 @@ def update_folder(
 ):
     try:
         check_permission(db, user, organization_id, "update_folder")
-        return folder_svc.update_folder(db, folder_id, folder)
+        folder_svc.update_folder(db, folder_id, folder)
+        return {"detail": "Folder updated successfully"}
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
