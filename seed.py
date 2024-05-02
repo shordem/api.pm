@@ -31,6 +31,7 @@ def seed(db: Session):
         Permission(name="delete_any_task"),  # 11
         Permission(name="update_task"),  # 12
         Permission(name="list_task"),  # 13
+        Permission(name="update_member"),  # 14
     ]
     db.add_all(permissions)
     db.commit()
@@ -50,6 +51,7 @@ def seed(db: Session):
         {"role_id": roles[0].id, "permission_id": permissions[11].id},
         {"role_id": roles[0].id, "permission_id": permissions[12].id},
         {"role_id": roles[0].id, "permission_id": permissions[13].id},
+        {"role_id": roles[0].id, "permission_id": permissions[14].id},
         {"role_id": roles[1].id, "permission_id": permissions[2].id},
         {"role_id": roles[1].id, "permission_id": permissions[3].id},
         {"role_id": roles[1].id, "permission_id": permissions[4].id},
@@ -62,6 +64,7 @@ def seed(db: Session):
         {"role_id": roles[1].id, "permission_id": permissions[11].id},
         {"role_id": roles[1].id, "permission_id": permissions[12].id},
         {"role_id": roles[1].id, "permission_id": permissions[13].id},
+        {"role_id": roles[1].id, "permission_id": permissions[14].id},
         {"role_id": roles[2].id, "permission_id": permissions[4].id},
         {"role_id": roles[2].id, "permission_id": permissions[8].id},
         {"role_id": roles[2].id, "permission_id": permissions[9].id},
