@@ -41,6 +41,9 @@ def update_folder(db: Session, folder_id: str, folder_update: FolderUpdate):
 
 def delete_folder(db: Session, folder_id: str):
     folder = db.query(Folder).filter(Folder.id == folder_id).first()
+    if folder is None:
+        raise Exception("Folder not found")
+
     if folder.is_default:
         raise Exception("Default folder cannot be deleted")
 
