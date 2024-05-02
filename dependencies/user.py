@@ -40,4 +40,4 @@ async def get_current_verified_user(
 ):
     if current_user.is_email_verified is False:
         raise HTTPException(status_code=400, detail="Email not verified")
-    return current_user
+    return UserSchema.model_validate(current_user)
