@@ -28,7 +28,7 @@ async def get_current_user(
             raise HTTPException(status_code=400, detail="Invalid token")
         token_data = TokenData(user_id=user_id)
     except JWTError as e:
-        raise HTTPException(status_code=400, detail="Invalid token")
+        raise HTTPException(status_code=400, detail=str(e))
 
     user = get_user(db=db, user_id=token_data.user_id)
 

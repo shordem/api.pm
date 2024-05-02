@@ -31,6 +31,6 @@ def verify_token(token: str):
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         return payload
     except JWTError as e:
-        return HTTPException(status_code=400, detail=e)
+        return HTTPException(status_code=400, detail=str(e))
     except Exception as e:
-        return HTTPException(status_code=400, detail=e)
+        return HTTPException(status_code=400, detail=str(e))
