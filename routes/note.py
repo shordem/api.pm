@@ -74,7 +74,7 @@ def update_note(
         raise HTTPException(status_code=400, detail=str(e))
 
 
-@router.delete("{organization_id}/{note_id}")
+@router.delete("/{organization_id}/{note_id}")
 def delete_note(
     organization_id: str,
     note_id: str,
