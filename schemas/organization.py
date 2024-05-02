@@ -5,7 +5,7 @@ class OrganizationBase(BaseModel):
     name: str
     image_url: str
     description: str
-    owner_id: str
+    owner_id: UUID4
 
 
 class OrganizationCreate(BaseModel):
@@ -17,10 +17,10 @@ class OrganizationCreatePayload(BaseModel):
     name: str
 
 
-class Organization(OrganizationBase):
+class OrganizationSchema(BaseModel):
     id: UUID4
     name: str
-    image_url: str
+    image_url: str | None
 
     class Config:
         from_attributes = True
