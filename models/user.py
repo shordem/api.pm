@@ -16,3 +16,4 @@ class User(base.BaseModel):
     organizations = relationship(UserOrganization, back_populates="user")
     todos = relationship("Todo", back_populates="creator")
     notes = relationship("Note", back_populates="creator")
+    codes = relationship("Code", back_populates="user")
