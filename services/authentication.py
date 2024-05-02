@@ -1,16 +1,22 @@
+from fastapi import BackgroundTasks
 from datetime import timedelta
 from sqlalchemy.orm import Session
 
+from config.email import send_email
 from models.user import User
-from schemas.organization import OrganizationCreate
 from services.organization import create_organization
+from services.user import get_user_by_email
+from services.code import create_code, get_code_by_user_id_and_code
+from schemas.organization import OrganizationCreate
 from schemas.authentication import LoginData, Token, VerifyEmail
 from schemas.user import UserCreate
+from schemas.email import EmailSchema
 from utilities.authentication import hash_password, verify_password
 from utilities.jwt import ACCESS_TOKEN_EXPIRE_MINUTES, create_access_token
+from utilities.generate_code import generate_code
 
 
-def register(db: Session, user: UserCreate):
+async def register(db: Session, user: UserCreate, background_tasks: BackgroundTasks):
     try:
         if db.query(User).filter(User.email == user.email).first():
             raise Exception("Email already exists")
@@ -26,6 +32,18 @@ def register(db: Session, user: UserCreate):
 
         create_organization(db, org)
 
+        code = generate_code()
+        create_code(db, code, str(user.id))
+
+        email = EmailSchema(
+            to=user.email,
+            subject="Verify Your Email",
+            template="verify-email.html",
+            variables={"fullname": f"{user.first_name} {user.last_name}", "code": code},
+        )
+
+        background_tasks.add_task(send_email, email)
+
         db.refresh(user)
         return user
     except Exception as e:
@@ -33,12 +51,16 @@ def register(db: Session, user: UserCreate):
         raise e
 
 
-def verify_email(db: Session, user_email: VerifyEmail):
-    user = db.query(User).filter(User.email == user_email.email).first()
+def verify_email(db: Session, verify_email: VerifyEmail):
+    user = get_user_by_email(db, verify_email.email)
+    code = get_code_by_user_id_and_code(
+        db=db, user_id=str(user.id), code=verify_email.code
+    )
+
     user.is_email_verified = True
+
+    db.delete(code)
     db.commit()
-    db.refresh(user)
-    return user
 
 
 def login(db: Session, login: LoginData):

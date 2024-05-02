@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException, Depends, BackgroundTasks
 from sqlalchemy.orm import Session
 from services import authentication as authentication_svc
 from schemas.authentication import LoginData, VerifyEmail
@@ -12,9 +12,11 @@ router = APIRouter(
 
 
 @router.post("/register")
-def register(user: UserCreate, db: Session = Depends(get_db)):
+async def register(
+    user: UserCreate, background_tasks: BackgroundTasks, db: Session = Depends(get_db)
+):
     try:
-        authentication_svc.register(db, user)
+        await authentication_svc.register(db, user, background_tasks)
         return {"message": "User registered successfully"}
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
@@ -40,4 +42,9 @@ def login(login: LoginData, db: Session = Depends(get_db)):
 
 @router.post("/verify-email")
 def verify_email(user_email: VerifyEmail, db: Session = Depends(get_db)):
-    return authentication_svc.verify_email(db, user_email)
+
+    try:
+        authentication_svc.verify_email(db, user_email)
+        return {"message": "Email verified successfully"}
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))

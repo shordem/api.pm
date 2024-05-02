@@ -16,3 +16,4 @@ class LoginData(BaseModel):
 
 class VerifyEmail(BaseModel):
     email: str
+    code: str
