@@ -68,6 +68,7 @@ def delete_folder(
 ):
     try:
         check_permission(db, user, organization_id, "delete_folder")
-        return folder_svc.delete_folder(db, folder_id)
+        folder_svc.delete_folder(db, folder_id)
+        return {"detail": "Folder deleted successfully"}
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
