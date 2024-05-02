@@ -23,7 +23,7 @@ def get_folders(
 ):
     try:
         check_permission(db, user, organization_id, "list_folder")
-        return folder_svc.get_folders(db)
+        return folder_svc.get_folders(db, organization_id)
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
