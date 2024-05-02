@@ -21,7 +21,7 @@ def get_organizations(
     user: Annotated[UserSchema, Depends(get_current_verified_user)], db=Depends(get_db)
 ):
     try:
-        return organization_svc.get_organizations_by_member(db, user.id)
+        return organization_svc.get_user_organizations(db, user.id)
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 

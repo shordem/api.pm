@@ -27,7 +27,7 @@ def find_by_member(db: Session, user_id: str, organization_id: str):
     )
 
 
-def get_organizations_by_member(db: Session, user_id: str):
+def get_user_organizations(db: Session, user_id: str):
     results = (
         db.query(Organization)
         .join(UserOrganization, Organization.id == UserOrganization.organization_id)
