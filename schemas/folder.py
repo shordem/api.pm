@@ -7,8 +7,8 @@ class FolderBase(BaseModel):
     is_default: bool
 
 
-class FolderCreate(FolderBase):
-    pass
+class FolderCreate(BaseModel):
+    name: str
 
 
 class FolderSchema(FolderBase):

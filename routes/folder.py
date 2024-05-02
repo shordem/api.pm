@@ -37,7 +37,8 @@ def create_folder(
 ):
     try:
         check_permission(db, user, organization_id, "create_folder")
-        return folder_svc.create_folder(db, folder)
+        folder_svc.create_folder(db, folder, organization_id)
+        return {"detail": "Folder created successfully"}
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 

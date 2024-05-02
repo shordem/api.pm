@@ -14,7 +14,8 @@ def get_folders(db: Session, org_id: str):
     return db.query(Folder).filter(Folder.organization_id == org_id).all()
 
 
-def create_folder(db: Session, folder: FolderCreate):
+def create_folder(db: Session, folder_create: FolderCreate, org_id: str):
+    folder = Folder(name=folder_create.name, organization_id=org_id)
     db.add(folder)
     db.commit()
     db.refresh(folder)
