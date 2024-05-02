@@ -15,7 +15,7 @@ router = APIRouter(
 )
 
 
-@router.get("{organization_id}")
+@router.get("/{organization_id}")
 def get_folders(
     organization_id: str,
     user: Annotated[UserSchema, Depends(get_current_verified_user)],
@@ -28,7 +28,7 @@ def get_folders(
         raise HTTPException(status_code=400, detail=str(e))
 
 
-@router.post("{organization_id}")
+@router.post("/{organization_id}")
 def create_folder(
     organization_id: str,
     folder: FolderCreate,
@@ -42,7 +42,7 @@ def create_folder(
         raise HTTPException(status_code=400, detail=str(e))
 
 
-@router.patch("{organization_id}/{folder_id}")
+@router.patch("/{organization_id}/{folder_id}")
 def update_folder(
     organization_id: str,
     folder_id: str,
@@ -57,7 +57,7 @@ def update_folder(
         raise HTTPException(status_code=400, detail=str(e))
 
 
-@router.delete("{organization_id}/{folder_id}")
+@router.delete("/{organization_id}/{folder_id}")
 def delete_folder(
     organization_id: str,
     folder_id: str,
