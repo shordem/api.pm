@@ -11,20 +11,20 @@ class NoteBase(BaseModel):
     created_by: UUID4
 
 
-class NoteCreate(NoteBase):
-    pass
+class NoteCreate(BaseModel):
+    title: str
+    content: str
 
 
-class NoteSchema:
+class NoteSchema(BaseModel):
     id: UUID4
     title: str
     content: str
-    folder: FolderSchema
     created_by: UserSchema
 
     class Config:
         from_attributes = True
 
 
-class NoteUpdate(NoteBase):
-    id: UUID4
+class NoteUpdate(NoteCreate):
+    pass

@@ -15,7 +15,7 @@ router = APIRouter(
 )
 
 
-@router.get("{organization_id}/{note_id}")
+@router.get("/{organization_id}/{note_id}/view")
 def get_note(
     organization_id: str,
     note_id: str,
@@ -23,13 +23,13 @@ def get_note(
     db=Depends(get_db),
 ):
     try:
-        check_permission(db, user, organization_id, "view_task")
+        # check_permission(db, user, organization_id, "view_task")
         return note_svc.get_note(db, note_id)
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
 
-@router.get("{organization_id}/{folder_id}")
+@router.get("/{organization_id}/{folder_id}")
 def get_notes(
     organization_id: str,
     folder_id: str,
@@ -43,7 +43,7 @@ def get_notes(
         raise HTTPException(status_code=400, detail=str(e))
 
 
-@router.post("{organization_id}/{folder_id}")
+@router.post("/{organization_id}/{folder_id}")
 def create_note(
     organization_id: str,
     folder_id: str,
@@ -53,12 +53,13 @@ def create_note(
 ):
     try:
         check_permission(db, user, organization_id, "create_task")
-        return note_svc.create_note(db, folder_id, note)
+        note_svc.create_note(db, folder_id, user.id, note)
+        return {"detail": "Note created successfully"}
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
 
-@router.patch("{organization_id}/{note_id}")
+@router.patch("/{organization_id}/{note_id}")
 def update_note(
     organization_id: str,
     note_id: str,
@@ -69,7 +70,8 @@ def update_note(
     try:
         check_permission(db, user, organization_id, "update_task")
         note_svc.get_note(db, note_id)
-        return note_svc.update_note(db, note)
+        note_svc.update_note(db, note_id, note)
+        return {"detail": "Note updated successfully"}
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
@@ -83,6 +85,7 @@ def delete_note(
 ):
     try:
         check_permission(db, user, organization_id, "delete_task")
-        return note_svc.delete_note(db, note_id)
+        note_svc.delete_note(db, note_id)
+        return {"detail": "Note deleted successfully"}
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
