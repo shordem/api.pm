@@ -11,7 +11,12 @@ def get_folder(db: Session, folder_id: str):
 
 
 def get_folders(db: Session, org_id: str):
-    return db.query(Folder).filter(Folder.organization_id == org_id).all()
+    return (
+        db.query(Folder)
+        .filter(Folder.organization_id == org_id)
+        .order_by(Folder.created_at)
+        .all()
+    )
 
 
 def create_folder(db: Session, folder_create: FolderCreate, org_id: str):
