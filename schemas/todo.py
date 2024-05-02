@@ -1,6 +1,7 @@
+from typing import Optional
 from pydantic import BaseModel, UUID4
+from datetime import datetime
 
-from schemas.folder import FolderSchema
 from schemas.user import UserSchema
 
 
@@ -13,22 +14,23 @@ class TodoBase(BaseModel):
     created_by: UUID4
 
 
-class TodoCreate(TodoBase):
-    pass
+class TodoCreate(BaseModel):
+    title: str
+    description: str
+    due_date: datetime
 
 
-class TodoSchema:
+class TodoSchema(BaseModel):
     id: UUID4
     title: str
     description: str
-    due_date: str
+    due_date: datetime
     completed: bool
-    folder: FolderSchema
     created_by: UserSchema
 
     class Config:
         from_attributes = True
 
 
-class TodoUpdate(TodoBase):
-    id: UUID4
+class TodoUpdate(TodoCreate):
+    completed: bool

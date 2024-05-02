@@ -1,6 +1,5 @@
 from fastapi import APIRouter, HTTPException, Depends
 from typing import Annotated
-
 from schemas.todo import TodoCreate, TodoUpdate
 from schemas.user import UserSchema
 from services import todo as todo_svc
@@ -15,7 +14,7 @@ router = APIRouter(
 )
 
 
-@router.get("{organization_id}/{todo_id}")
+@router.get("/{organization_id}/{todo_id}/view")
 def get_todo(
     organization_id: str,
     todo_id: str,
@@ -23,13 +22,12 @@ def get_todo(
     db=Depends(get_db),
 ):
     try:
-        check_permission(db, user, organization_id, "view_task")
         return todo_svc.get_todo(db, todo_id)
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
 
-@router.get("{organization_id}/{folder_id}")
+@router.get("/{organization_id}/{folder_id}")
 def get_todos(
     organization_id: str,
     folder_id: str,
@@ -43,21 +41,23 @@ def get_todos(
         raise HTTPException(status_code=400, detail=str(e))
 
 
-@router.post("{organization_id}")
+@router.post("/{organization_id}/{folder_id}")
 def create_todo(
     organization_id: str,
+    folder_id: str,
     todo: TodoCreate,
     user: Annotated[UserSchema, Depends(get_current_verified_user)],
     db=Depends(get_db),
 ):
     try:
         check_permission(db, user, organization_id, "create_task")
-        return todo_svc.create_todo(db, todo)
+        todo_svc.create_todo(db, folder_id, user.id, todo)
+        return {"detail": "Todo created successfully"}
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
 
-@router.patch("{organization_id}/{todo_id}")
+@router.patch("/{organization_id}/{todo_id}")
 def update_todo(
     organization_id: str,
     todo_id: str,
@@ -68,12 +68,13 @@ def update_todo(
     try:
         check_permission(db, user, organization_id, "update_task")
         todo_svc.get_todo(db, todo_id)
-        return todo_svc.update_todo(db, todo)
+        todo_svc.update_todo(db, todo_id, todo)
+        return {"detail": "Todo updated successfully"}
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
 
-@router.delete("{organization_id}/{todo_id}")
+@router.delete("/{organization_id}/{todo_id}")
 def delete_todo(
     organization_id: str,
     todo_id: str,
@@ -82,6 +83,7 @@ def delete_todo(
 ):
     try:
         check_permission(db, user, organization_id, "delete_task")
-        return todo_svc.delete_todo(db, todo_id)
+        todo_svc.delete_todo(db, todo_id)
+        return {"detail": "Todo deleted successfully"}
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
