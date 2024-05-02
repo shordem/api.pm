@@ -85,15 +85,19 @@ def add_member_to_organization(db: Session, organization_id: str, user_email: st
     if not user.is_email_verified:
         raise Exception("User is not verified")
 
-    get_organization(db, organization_id)
+    org = get_organization(db, organization_id)
 
     member = find_by_member(db, user.id, organization_id)
     if member:
         raise Exception("User is already a member of the organization")
 
     member_role = db.query(Role).filter(Role.name == "member").first()
+    if member_role is None:
+        db.rollback()
+        raise Exception("Role not found")
+
     new_member = UserOrganization(
-        user_id=user.id, organization_id=organization_id, role=member_role.id
+        user_id=user.id, organization_id=org.id, role_id=member_role.id
     )
     db.add(new_member)
     db.commit()
