@@ -10,7 +10,7 @@ def get_user(db: Session, user_id: str):
     return user
 
 
-def get_user_by_email(db: Session, email: str):
+def get_user_by_email(db: Session, email: str) -> User:
     user = db.query(User).filter(User.email == email).first()
     if not user:
         raise Exception("User not found")
