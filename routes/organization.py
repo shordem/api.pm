@@ -1,10 +1,10 @@
 from fastapi import APIRouter, HTTPException, Depends
 from typing import Annotated
 
-from schemas.member import MemberCreate
 from services import organization as organization_svc
 from schemas.organization import OrganizationCreatePayload, OrganizationCreate
 from schemas.user import UserSchema
+from schemas.member import MemberCreate, UpdateMemberRole
 from dependencies.db import get_db
 from dependencies.user import get_current_verified_user
 from dependencies.permission import check_permission
@@ -73,6 +73,22 @@ def add_member_to_organization(
         check_permission(db, user, organization_id, "add_member")
         organization_svc.add_member_to_organization(db, organization_id, member.email)
         return {"detail": "Member added successfully"}
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+@router.patch("/{organization_id}/members/{member_id}")
+def update_member_role(
+    organization_id: str,
+    member_id: str,
+    member: UpdateMemberRole,
+    user: Annotated[UserSchema, Depends(get_current_verified_user)],
+    db=Depends(get_db),
+):
+    try:
+        check_permission(db, user, organization_id, "update_member")
+        organization_svc.update_member_role(db, organization_id, member_id, member.role)
+        return {"detail": "Member role updated successfully"}
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 

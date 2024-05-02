@@ -103,6 +103,19 @@ def add_member_to_organization(db: Session, organization_id: str, user_email: st
     db.commit()
 
 
+def update_member_role(db: Session, organization_id: str, user_id: str, role: str):
+    member = find_by_member(db, user_id, organization_id)
+    if not member:
+        raise Exception("User is not a member of the organization")
+
+    role = db.query(Role).filter(Role.name == role).first()
+    if not role:
+        raise Exception("Role not found")
+
+    member.role_id = role.id
+    db.commit()
+
+
 def remove_member_from_organization(db: Session, organization_id: str, user_id: str):
     member = find_by_member(db, user_id, organization_id)
     if not member:
