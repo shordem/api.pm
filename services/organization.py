@@ -5,9 +5,9 @@ from models.folder import Folder
 from models.user import User
 from models.user_organization import UserOrganization
 from models.role import Role
-from schemas.organization import OrganizationCreate
+from schemas.organization import OrganizationCreate, OrganizationSchema
 from schemas.user import UserSchema
-from schemas.organization import OrganizationSchema
+from schemas.member import ListMember
 from services.user import get_user_by_email
 
 
@@ -44,15 +44,19 @@ def get_user_organizations(db: Session, user_id: str):
 
 def list_organization_members(db: Session, organization_id: str):
     results = (
-        db.query(User)
+        db.query(User, Role)
         .join(UserOrganization, User.id == UserOrganization.user_id)
+        .join(Role, UserOrganization.role_id == Role.id)
         .filter(UserOrganization.organization_id == organization_id)
         .all()
     )
 
     resultDto = []
-    for user in results:
-        resultDto.append(UserSchema.model_validate(user))
+    for user, role in results:
+        print(role.__dict__)
+        user_data = UserSchema.model_validate(user)
+        data = ListMember(role=role.name, **user_data.model_dump())
+        resultDto.append(data)
 
     return resultDto
 
