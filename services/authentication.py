@@ -1,19 +1,20 @@
-from fastapi import BackgroundTasks
 from datetime import timedelta
+
+from fastapi import BackgroundTasks
 from sqlalchemy.orm import Session
 
 from config.email import send_email
 from models.user import User
+from schemas.authentication import LoginData, Token, VerifyEmail
+from schemas.email import EmailSchema
+from schemas.organization import OrganizationCreate
+from schemas.user import UserCreate
+from services.code import create_code, get_code_by_user_id_and_code
 from services.organization import create_organization
 from services.user import get_user_by_email
-from services.code import create_code, get_code_by_user_id_and_code
-from schemas.organization import OrganizationCreate
-from schemas.authentication import LoginData, Token, VerifyEmail
-from schemas.user import UserCreate
-from schemas.email import EmailSchema
 from utilities.authentication import hash_password, verify_password
-from utilities.jwt import ACCESS_TOKEN_EXPIRE_MINUTES, create_access_token
 from utilities.generate_code import generate_code
+from utilities.jwt import ACCESS_TOKEN_EXPIRE_MINUTES, create_access_token
 
 
 async def register(db: Session, user: UserCreate, background_tasks: BackgroundTasks):
@@ -66,7 +67,7 @@ def verify_email(db: Session, verify_email: VerifyEmail):
 def login(db: Session, login: LoginData):
 
     try:
-        user = db.query(User).filter(User.username == login.username).first()
+        user = db.query(User).filter(User.email == login.email).first()
 
         if user is None:
             return 404
