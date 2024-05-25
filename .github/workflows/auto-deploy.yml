@@ -27,6 +27,7 @@ jobs:
           envkey_MAIL_FROM: ${{ secrets.MAIL_FROM }}
           envkey_MAIL_PORT: ${{ secrets.MAIL_PORT }}
           envkey_MAIL_HOST: ${{ secrets.MAIL_HOST }}
+          fail_on_empty: true
 
       - name: Build Docker images
         run: |
