@@ -1,6 +1,7 @@
-from typing import Optional
-from pydantic import BaseModel, UUID4
 from datetime import datetime
+from typing import Optional
+
+from pydantic import UUID4, BaseModel
 
 from schemas.user import UserSchema
 
@@ -17,14 +18,14 @@ class TodoBase(BaseModel):
 class TodoCreate(BaseModel):
     title: str
     description: str
-    due_date: datetime
+    due_date: datetime | None
 
 
 class TodoSchema(BaseModel):
     id: UUID4
     title: str
     description: str
-    due_date: datetime
+    due_date: datetime | None
     completed: bool
     created_by: UserSchema
 
