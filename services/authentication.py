@@ -68,7 +68,7 @@ def verify_email(db: Session, verify_email: VerifyEmail):
 def login(db: Session, login: LoginData):
 
     try:
-        user = db.query(User).filter(User.email == login.email).first()
+        user = db.query(User).filter(User.email == login.email.lower()).first()
 
         if user is None:
             return 404
