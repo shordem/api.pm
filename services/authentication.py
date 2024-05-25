@@ -25,6 +25,7 @@ async def register(db: Session, user: UserCreate, background_tasks: BackgroundTa
             raise Exception("Username already exists")
 
         user = User(**user.model_dump())
+        user.email = user.email.lower()
         user.password = hash_password(user.password)
         db.add(user)
         db.commit()
