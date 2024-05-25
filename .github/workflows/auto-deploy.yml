@@ -21,7 +21,7 @@ jobs:
           envkey_DATABASE_USER: ${{ secrets.DATABASE_USER }}
           envkey_DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
           envkey_JWT_SECRET: ${{ secrets.JWT_SECRET }}
-          envkey_JWT_EXPIRES_MINUTES: ${{ secrets.JWT_EXPIRES_MINUTES }}
+          envkey_JWT_EXPIRE_MINUTES: ${{ secrets.JWT_EXPIRE_MINUTES }}
           envkey_MAIL_USERNAME: ${{ secrets.MAIL_USERNAME }}
           envkey_MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
           envkey_MAIL_FROM: ${{ secrets.MAIL_FROM }}
